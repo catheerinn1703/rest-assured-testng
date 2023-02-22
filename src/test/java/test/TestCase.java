@@ -1,15 +1,12 @@
-import flow.CcTestBuilder;
-import io.restassured.RestAssured;
+package test;
+
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import netscape.javascript.JSObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pojo.agentLogin.AgentLoginRequest;
 
 import static io.restassured.RestAssured.*;
-import static io.restassured.parsing.Parser.JSON;
-
 
 public class TestCase {
 
@@ -29,8 +26,8 @@ public class TestCase {
                 .then()
                 .extract().response();
 
-        System.out.println(response.asPrettyString());
-        Assertions.assertEquals(200, response.statusCode());
 
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertNotNull(response.getBody().asString());
     }
 }
