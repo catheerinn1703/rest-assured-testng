@@ -5,16 +5,21 @@ import lombok.Getter;
 
 @Data
 public class AgentLoginResponse {
+    public String token;
+    public String message;
+    public int status;
+    AgentProfile agentProfile;
+
     public String getToken() {
         return token;
+    }
+    public String getMessage() {
+        return message;
     }
 
     public AgentProfile getAgentProfile() {
         return agentProfile;
     }
-
-    public String token;
-    AgentProfile agentProfile;
 
     public class AgentProfile {
         public String agentId;
