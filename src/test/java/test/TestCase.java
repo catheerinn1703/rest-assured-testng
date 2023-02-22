@@ -2,19 +2,21 @@ package test;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pojo.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.AgentLoginResponse;
 
 import static io.restassured.RestAssured.*;
 
-public class TestCase {
+public class TestCase extends BaseTestCase{
 
     @Test
-    public void agentLogin() {
+    public void agentLogin(){
         String username = "admin@smma.id";
         String password = "admin";
-        baseURI = "http://34.102.228.199";
+        baseURI = baseUrl();
         basePath= "/v1/agent/login";
         AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(username, password);
 
@@ -24,10 +26,14 @@ public class TestCase {
                 .body(agentLoginRequest)
                 .post()
                 .then()
+                .log().all()
                 .extract().response();
 
+        ResponseBody body = response.getBody();
+        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
 
         Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertNotNull(response.getBody().asString());
+        Assertions.assertNotNull(responseBody.getAgentProfile().getAgentId());
+        Assertions.assertNotNull(responseBody.getAgentProfile().getAccount().getAccountId());
     }
 }
