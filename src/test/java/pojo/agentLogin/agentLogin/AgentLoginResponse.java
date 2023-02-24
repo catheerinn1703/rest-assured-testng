@@ -1,4 +1,4 @@
-package pojo.agentLogin;
+package pojo.agentLogin.agentLogin;
 
 import lombok.Data;
 import lombok.Getter;

@@ -1,4 +1,10 @@
 {
-  "username": "admin@smma.id",
-  "password": "admin"
+  "inboxName": "CathTesting_Inbox",
+  "websiteUrl": "www.assurance.com",
+  "greetingInfo": {
+    "greetingEnabled": false,
+    "greetingMessage": "Welcome to CathTesting Contact Center"
+  },
+  "widgetColor": "#323DS",
+  "welcomeTitle": "Welcome to CathTesting"
 }

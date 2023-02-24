@@ -1,33 +1,26 @@
 package test;
 
-import io.restassured.path.json.JsonPath;
+import flow.CCFlow;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pojo.agentLogin.AgentLoginRequest;
-import pojo.agentLogin.AgentLoginResponse;
+import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.agentLogin.AgentLoginResponse;
+import pojo.agentLogin.createInbox.CreateInboxResponse;
+import testData.TestData;
 
 import static io.restassured.RestAssured.*;
 
-public class TestCase extends BaseTestCase{
+public class TestCase extends BaseTestCase {
+
+    CCFlow ccFlow = new CCFlow();
     String username = "admin@smma.id";
     String password = "admin";
 
     @Test
-    public void agentLoginSuccessfully(){
-        baseURI = baseUrl();
-        basePath= "/v1/agent/login";
-        AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(username, password);
-
-        Response response = given().log().all()
-                .header("Content-type", "application/json")
-                .and()
-                .body(agentLoginRequest)
-                .post()
-                .then()
-                .log().all()
-                .extract().response();
+    public void agentLoginSuccessfully() {
+        Response response = ccFlow.agentDoLogin(username, password);
 
         ResponseBody body = response.getBody();
         AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
@@ -38,10 +31,10 @@ public class TestCase extends BaseTestCase{
     }
 
     @Test
-    public void agentLoginWithIncorrectUsername(){
+    public void agentLoginWithIncorrectUsername() {
         String wrongUsername = "abc";
         baseURI = baseUrl();
-        basePath= "/v1/agent/login";
+        basePath = "/v1/agent/login";
         AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(wrongUsername, password);
 
         Response response = given().log().all()
@@ -55,15 +48,16 @@ public class TestCase extends BaseTestCase{
 
         ResponseBody body = response.getBody();
         AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+
         Assertions.assertEquals(404, response.statusCode());
-        Assertions.assertEquals(responseBody.getMessage(),"agent not found");
+        Assertions.assertEquals(responseBody.getMessage(), "agent not found");
     }
 
     @Test
-    public void agentLoginWithIncorrectPassword(){
+    public void agentLoginWithIncorrectPassword() {
         String wrongPassword = "abc";
         baseURI = baseUrl();
-        basePath= "/v1/agent/login";
+        basePath = "/v1/agent/login";
         AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(username, wrongPassword);
 
         Response response = given().log().all()
@@ -78,6 +72,25 @@ public class TestCase extends BaseTestCase{
         ResponseBody body = response.getBody();
         AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
         Assertions.assertEquals(401, response.statusCode());
-        Assertions.assertEquals(responseBody.getMessage(),"Wrong password, try again");
+        Assertions.assertEquals(responseBody.getMessage(), "Wrong password, try again");
+    }
+
+    @Test
+    public void createInboxSuccessfully() {
+        baseURI = baseUrl();
+        basePath = "/v1/agent/login";
+        Response response = ccFlow.agentDoLogin(username, password);
+
+        ResponseBody body = response.getBody();
+        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        String token = responseBody.getToken();
+
+        Response createInboxResponse = ccFlow.createInbox(TestData.ACCOUNT_ID,token);
+        ResponseBody createInboxBody = createInboxResponse.getBody();
+        CreateInboxResponse createInboxResponseBody = createInboxBody.as(CreateInboxResponse.class);
+        Assertions.assertEquals(201, createInboxResponse.statusCode());
+        Assertions.assertEquals("Inbox Created Successfully",createInboxResponseBody.getMessage());
+        Assertions.assertNotNull(createInboxResponseBody.getInboxId());
+
     }
 }
