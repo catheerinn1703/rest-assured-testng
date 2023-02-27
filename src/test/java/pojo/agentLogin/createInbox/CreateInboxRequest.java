@@ -1,5 +1,7 @@
 package pojo.agentLogin.createInbox;
 
+import pojo.agentLogin.agentLogin.AgentLoginRequest;
+
 public class CreateInboxRequest {
     public void setInboxName(String inboxName) {
         this.inboxName = inboxName;
@@ -26,5 +28,11 @@ public class CreateInboxRequest {
 
         public boolean greetingEnabled;
         public String greetingMessage;
+    }
+
+    public static AgentLoginRequest agentLoginRequest(String username, String password) {
+        return AgentLoginRequest.builder().username(username)
+                .password(password)
+                .build();
     }
 }
