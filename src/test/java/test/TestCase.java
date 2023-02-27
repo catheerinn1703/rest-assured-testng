@@ -22,8 +22,7 @@ public class TestCase extends BaseTestCase {
     public void agentLoginSuccessfully() {
         Response response = ccFlow.agentDoLogin(username, password);
 
-        ResponseBody body = response.getBody();
-        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        AgentLoginResponse responseBody = response.getBody().as(AgentLoginResponse.class);
 
         Assertions.assertEquals(200, response.statusCode());
         Assertions.assertNotNull(responseBody.getAgentProfile().getAgentId());
@@ -46,8 +45,7 @@ public class TestCase extends BaseTestCase {
                 .log().all()
                 .extract().response();
 
-        ResponseBody body = response.getBody();
-        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        AgentLoginResponse responseBody = response.getBody().as(AgentLoginResponse.class);
 
         Assertions.assertEquals(404, response.statusCode());
         Assertions.assertEquals(responseBody.getMessage(), "agent not found");
@@ -69,8 +67,8 @@ public class TestCase extends BaseTestCase {
                 .log().all()
                 .extract().response();
 
-        ResponseBody body = response.getBody();
-        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        AgentLoginResponse responseBody = response.getBody().as(AgentLoginResponse.class);
+
         Assertions.assertEquals(401, response.statusCode());
         Assertions.assertEquals(responseBody.getMessage(), "Wrong password, try again");
     }
@@ -86,11 +84,11 @@ public class TestCase extends BaseTestCase {
         String token = responseBody.getToken();
 
         Response createInboxResponse = ccFlow.createInbox(TestData.ACCOUNT_ID,token);
-        ResponseBody createInboxBody = createInboxResponse.getBody();
-        CreateInboxResponse createInboxResponseBody = createInboxBody.as(CreateInboxResponse.class);
+        CreateInboxResponse createInboxBody = createInboxResponse.getBody().as(CreateInboxResponse.class);
+
         Assertions.assertEquals(201, createInboxResponse.statusCode());
-        Assertions.assertEquals("Inbox Created Successfully",createInboxResponseBody.getMessage());
-        Assertions.assertNotNull(createInboxResponseBody.getInboxId());
+        Assertions.assertEquals("Inbox Created Successfully",createInboxBody.getMessage());
+        Assertions.assertNotNull(createInboxBody.getInboxId());
 
     }
 }

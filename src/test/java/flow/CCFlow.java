@@ -3,7 +3,6 @@ package flow;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
-import pojo.agentLogin.createInbox.CreateInboxResponse;
 
 import java.io.File;
 
