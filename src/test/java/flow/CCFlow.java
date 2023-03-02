@@ -3,6 +3,7 @@ package flow;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.setPassword.SetPasswordRequest;
 
 import java.io.File;
 
@@ -27,14 +28,14 @@ public class CCFlow extends BaseUrl {
         return response;
     }
 
-    public Response createInbox(String accountId, String token){
+    public Response createInbox(String accountId, String token) {
         baseURI = baseUrl();
         RestAssured.basePath = "/v1/account/{aid}/web-widget/inboxes";
-        File body = new File(System.getProperty("user.dir")+"/src/test/resources/agentLogin.json");
+        File body = new File(System.getProperty("user.dir") + "/src/test/resources/agentLogin.json");
 
         Response response = given().log().all()
-                .pathParam("aid",accountId)
-                .header("Authorization","jwt "+token)
+                .pathParam("aid", accountId)
+                .header("Authorization", "jwt " + token)
                 .header("Content-type", "application/json")
                 .and()
                 .body(body)
@@ -45,4 +46,24 @@ public class CCFlow extends BaseUrl {
 
         return response;
     }
+
+    public Response setPassword(String username, String password, String token) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "/v1/agent/password";
+
+        SetPasswordRequest body = SetPasswordRequest.setPasswordRequest(username, password);
+
+        Response response = given().log().all()
+                .header("Authorization", "jwt " + token)
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+
+        return response;
+    }
+
 }

@@ -91,4 +91,21 @@ public class TestCase extends BaseTestCase {
         Assertions.assertNotNull(createInboxBody.getInboxId());
 
     }
+
+    @Test
+    public void setPasswordSuccessfully() {
+        Response response = ccFlow.agentDoLogin(username, password);
+
+        ResponseBody body = response.getBody();
+        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        String token = responseBody.getToken();
+
+        Response setPasswordResponse = ccFlow.setPassword(TestData.USERNAME_SET_PASSWORD,
+                TestData.PASSWORD_SET_PASSWORD,token);
+
+        Assertions.assertEquals(200, setPasswordResponse.statusCode());
+    }
+
+
+
 }
