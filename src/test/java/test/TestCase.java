@@ -89,6 +89,5 @@ public class TestCase extends BaseTestCase {
         Assertions.assertEquals(201, createInboxResponse.statusCode());
         Assertions.assertEquals("Inbox Created Successfully",createInboxBody.getMessage());
         Assertions.assertNotNull(createInboxBody.getInboxId());
-
     }
 }
