@@ -28,14 +28,14 @@ public class CCFlow extends BaseUrl {
         return response;
     }
 
-    public Response createInbox(String accountId, String token){
+    public Response createInbox(String accountId, String token) {
         baseURI = baseUrl();
         RestAssured.basePath = "/v1/account/{aid}/web-widget/inboxes";
-        File body = new File(System.getProperty("user.dir")+"/src/test/resources/agentLogin.json");
+        File body = new File(System.getProperty("user.dir") + "/src/test/resources/agentLogin.json");
 
         Response response = given().log().all()
-                .pathParam("aid",accountId)
-                .header("Authorization","jwt "+token)
+                .pathParam("aid", accountId)
+                .header("Authorization", "jwt " + token)
                 .header("Content-type", "application/json")
                 .and()
                 .body(body)
@@ -52,12 +52,30 @@ public class CCFlow extends BaseUrl {
         RestAssured.basePath = "/v1/agent/password";
 
         SetPasswordRequest body = SetPasswordRequest.setPasswordRequest(username, password);
-
         Response response = given().log().all()
                 .header("Authorization", "jwt " + token)
                 .header("Content-type", "application/json")
                 .and()
                 .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+
+        return response;
+    }
+
+    public Response addInboxMember(String accountId, String token, String inboxId, String agentId) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "v1/account/{accountId}/inbox/{inboxId}/member?agentId";
+
+        Response response = given().log().all()
+                .pathParam("accountId", accountId)
+                .pathParam("inboxId", inboxId)
+                .queryParam("agentId", agentId)
+                .header("Authorization", "jwt " + token)
+                .header("Content-type", "application/json")
+                .and()
                 .post()
                 .then()
                 .log().all()

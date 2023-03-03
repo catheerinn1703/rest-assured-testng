@@ -94,15 +94,25 @@ public class TestCase extends BaseTestCase {
     @Test
     public void setPasswordSuccessfully() {
         Response response = ccFlow.agentDoLogin(username, password);
-
         ResponseBody body = response.getBody();
         AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
         String token = responseBody.getToken();
-
         Response setPasswordResponse = ccFlow.setPassword(TestData.USERNAME_SET_PASSWORD,
                 TestData.PASSWORD_SET_PASSWORD,token);
 
         Assertions.assertEquals(200, setPasswordResponse.statusCode());
     }
+    @Test
+    public void addInboxMemberSuccessfully() {
+        Response response = ccFlow.agentDoLogin(username, password);
+        ResponseBody body = response.getBody();
+        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        String token = responseBody.getToken();
 
+        Response addInboxMemberResponse = ccFlow.addInboxMember(TestData.ACCOUNT_ID,token,
+                "95196f11-ce0d-426d-adc5-13cb3f23f33b","d8d1b800-29c6-4c78-b75b-02f40baf2f86");
+        Assertions.assertEquals(200, addInboxMemberResponse.statusCode());
+
+    }
 }
+
