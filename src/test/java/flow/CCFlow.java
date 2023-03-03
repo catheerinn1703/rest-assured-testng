@@ -3,7 +3,9 @@ package flow;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.agentLogin.AgentLoginResponse;
 import pojo.agentLogin.setPassword.SetPasswordRequest;
+import testData.TestData;
 
 import java.io.File;
 
@@ -77,6 +79,25 @@ public class CCFlow extends BaseUrl {
                 .header("Content-type", "application/json")
                 .and()
                 .post()
+                .then()
+                .log().all()
+                .extract().response();
+
+        return response;
+    }
+
+    public Response removeInboxMember(String accountId, String token, String inboxId, String agentId) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "v1/account/{accountId}/inbox/{inboxId}/member?agentId";
+
+        Response response = given().log().all()
+                .pathParam("accountId", accountId)
+                .pathParam("inboxId", inboxId)
+                .queryParam("agentId", agentId)
+                .header("Authorization", "jwt " + token)
+                .header("Content-type", "application/json")
+                .and()
+                .delete()
                 .then()
                 .log().all()
                 .extract().response();
