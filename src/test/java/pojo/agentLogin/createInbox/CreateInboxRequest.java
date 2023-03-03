@@ -1,4 +1,4 @@
-package pojo.agentLogin.createInbox;
+package pojo.agentLogin.AcreateInbox;
 
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
 
