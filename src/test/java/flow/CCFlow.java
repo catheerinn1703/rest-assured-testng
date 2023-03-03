@@ -3,6 +3,7 @@ package flow;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.setPassword.SetPasswordRequest;
 
 import java.io.File;
 
@@ -35,6 +36,25 @@ public class CCFlow extends BaseUrl {
         Response response = given().log().all()
                 .pathParam("aid",accountId)
                 .header("Authorization","jwt "+token)
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+
+        return response;
+    }
+
+    public Response setPassword(String username, String password, String token) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "/v1/agent/password";
+
+        SetPasswordRequest body = SetPasswordRequest.setPasswordRequest(username, password);
+
+        Response response = given().log().all()
+                .header("Authorization", "jwt " + token)
                 .header("Content-type", "application/json")
                 .and()
                 .body(body)
