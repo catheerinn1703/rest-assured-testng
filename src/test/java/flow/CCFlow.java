@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
 import pojo.agentLogin.agentLogin.AgentLoginResponse;
+import pojo.agentLogin.registerContact.RegisterContactRequest;
 import pojo.agentLogin.setPassword.SetPasswordRequest;
 import testData.TestData;
 
@@ -104,4 +105,23 @@ public class CCFlow extends BaseUrl {
 
         return response;
     }
+
+    public Response registerContact(String websiteToken, String name, String email, String phone) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "/v1/widget/website-token/{websiteToken}/auth";
+        RegisterContactRequest body = RegisterContactRequest.registerContactRequest(name, email, phone);
+
+        return given().log().all()
+                .pathParam("websiteToken", websiteToken)
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+    }
 }
+
+
+

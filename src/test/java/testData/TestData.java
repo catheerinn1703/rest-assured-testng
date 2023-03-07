@@ -10,4 +10,11 @@ public class TestData {
 
     public static final String INBOX_ID = "95196f11-ce0d-426d-adc5-13cb3f23f33b";
     public static final String AGENT_ID = "d8d1b800-29c6-4c78-b75b-02f40baf2f86";
+    public static final String WEBSITE_TOKEN = "95196f11-ce0d-426d-adc5-13cb3f23f33b";
+    public static final String INVALID_WEBSITE_TOKEN = "95196f11-ce0d-426d-adc5-13cb3f23f33";
+    public static final String NAME_CONTACT = "hesti dinata";
+    public static final String EMAIL_CONTACT = "hesti@maili.com";
+    public static final String PHONE_CONTACT = "088211797948";
+
+
 }

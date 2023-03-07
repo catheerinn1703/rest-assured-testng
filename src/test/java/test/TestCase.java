@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
 import pojo.agentLogin.agentLogin.AgentLoginResponse;
 import pojo.agentLogin.createInbox.CreateInboxResponse;
+import pojo.agentLogin.registerContact.RegisterContactResponse;
 import testData.TestData;
 
 @org.testng.annotations.Test
@@ -76,6 +77,25 @@ public class TestCase extends BaseTestCase {
 
         Assertions.assertEquals(200, addInboxMemberResponse.statusCode());
     }
-}
 
+    @Test
+    public void registerContactSuccessfully() {
+        Response response = ccFlow.registerContact(TestData.WEBSITE_TOKEN, TestData.NAME_CONTACT,
+                TestData.EMAIL_CONTACT, TestData.PHONE_CONTACT);
+        RegisterContactResponse registerContactBody = response.getBody().as(RegisterContactResponse.class);
+
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals(registerContactBody.getName(),TestData.NAME_CONTACT);
+        Assertions.assertNotNull(registerContactBody.getEmail(),TestData.EMAIL_CONTACT);
+    }
+    @Test
+    public void registerContactFailedWithIncorrectWebsiteToken() {
+        Response response = ccFlow.registerContact(TestData.INVALID_WEBSITE_TOKEN, TestData.NAME_CONTACT,
+                TestData.EMAIL_CONTACT, TestData.PHONE_CONTACT);
+        RegisterContactResponse registerContactBody = response.getBody().as(RegisterContactResponse.class);
+
+        Assertions.assertEquals(404, response.statusCode());
+        Assertions.assertEquals("Wrong website token", registerContactBody.getMessage());
+    }
+}
 
