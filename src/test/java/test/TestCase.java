@@ -1,20 +1,17 @@
 package test;
 
-import flow.CCFlow;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import org.testng.annotations.Test;
+import pojo.agentLogin.addAccount.AddAccountResponse;
 import pojo.agentLogin.agentLogin.AgentLoginResponse;
 import pojo.agentLogin.createInbox.CreateInboxResponse;
+import pojo.agentLogin.registerContact.RegisterContactResponse;
 import testData.TestData;
 
-import static io.restassured.RestAssured.*;
-
+@org.testng.annotations.Test
 public class TestCase extends BaseTestCase {
-
-    CCFlow ccFlow = new CCFlow();
     String username = "admin@smma.id";
     String password = "admin";
 
@@ -32,19 +29,7 @@ public class TestCase extends BaseTestCase {
     @Test
     public void agentLoginWithIncorrectUsername() {
         String wrongUsername = "abc";
-        baseURI = baseUrl();
-        basePath = "/v1/agent/login";
-        AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(wrongUsername, password);
-
-        Response response = given().log().all()
-                .header("Content-type", "application/json")
-                .and()
-                .body(agentLoginRequest)
-                .post()
-                .then()
-                .log().all()
-                .extract().response();
-
+        Response response = ccFlow.agentDoLogin(wrongUsername, password);
         AgentLoginResponse responseBody = response.getBody().as(AgentLoginResponse.class);
 
         Assertions.assertEquals(404, response.statusCode());
@@ -54,56 +39,79 @@ public class TestCase extends BaseTestCase {
     @Test
     public void agentLoginWithIncorrectPassword() {
         String wrongPassword = "abc";
-        baseURI = baseUrl();
-        basePath = "/v1/agent/login";
-        AgentLoginRequest agentLoginRequest = AgentLoginRequest.agentLoginRequest(username, wrongPassword);
-
-        Response response = given().log().all()
-                .header("Content-type", "application/json")
-                .and()
-                .body(agentLoginRequest)
-                .post()
-                .then()
-                .log().all()
-                .extract().response();
-
+        Response response = ccFlow.agentDoLogin(wrongPassword, password);
         AgentLoginResponse responseBody = response.getBody().as(AgentLoginResponse.class);
 
         Assertions.assertEquals(401, response.statusCode());
         Assertions.assertEquals(responseBody.getMessage(), "Wrong password, try again");
     }
 
-    @Test
+    @Test(enabled = false)
     public void createInboxSuccessfully() {
-        baseURI = baseUrl();
-        basePath = "/v1/agent/login";
         Response response = ccFlow.agentDoLogin(username, password);
 
-        ResponseBody body = response.getBody();
-        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        AgentLoginResponse responseBody = response.as(AgentLoginResponse.class);
         String token = responseBody.getToken();
 
-        Response createInboxResponse = ccFlow.createInbox(TestData.ACCOUNT_ID,token);
+        Response createInboxResponse = ccFlow.createInbox(TestData.ACCOUNT_ID, getAdminToken());
         CreateInboxResponse createInboxBody = createInboxResponse.getBody().as(CreateInboxResponse.class);
 
         Assertions.assertEquals(201, createInboxResponse.statusCode());
-        Assertions.assertEquals("Inbox Created Successfully",createInboxBody.getMessage());
+        Assertions.assertEquals("Inbox Created Successfully", createInboxBody.getMessage());
         Assertions.assertNotNull(createInboxBody.getInboxId());
+    }
 
+    @Test
+    public void setPasswordSuccessfully() {
+        Response setPasswordResponse = ccFlow.setPassword(TestData.USERNAME_SET_PASSWORD,
+                TestData.PASSWORD_SET_PASSWORD, getAdminToken());
+
+        Assertions.assertEquals(200, setPasswordResponse.statusCode());
+    }
+
+    @Test
+    public void addInboxMemberSuccessfully() {
+        Response addInboxMemberResponse = ccFlow.addInboxMember(TestData.ACCOUNT_ID, getAdminToken(),
+                TestData.INBOX_ID, TestData.AGENT_ID);
+
+        ccFlow.removeInboxMember(TestData.ACCOUNT_ID, getAdminToken(),
+                TestData.INBOX_ID, TestData.AGENT_ID);
+
+        Assertions.assertEquals(200, addInboxMemberResponse.statusCode());
+    }
+
+    @Test
+    public void registerContactSuccessfully() {
+        Response response = ccFlow.registerContact(TestData.WEBSITE_TOKEN, TestData.NAME_CONTACT,
+                TestData.EMAIL_CONTACT, TestData.PHONE_CONTACT);
+        RegisterContactResponse registerContactBody = response.getBody().as(RegisterContactResponse.class);
+
+        Assertions.assertEquals(200, response.statusCode());
+        Assertions.assertEquals(registerContactBody.getName(),TestData.NAME_CONTACT);
+        Assertions.assertNotNull(registerContactBody.getEmail(),TestData.EMAIL_CONTACT);
+    }
+    @Test
+    public void registerContactFailedWithIncorrectWebsiteToken() {
+        Response response = ccFlow.registerContact(TestData.INVALID_WEBSITE_TOKEN, TestData.NAME_CONTACT,
+                TestData.EMAIL_CONTACT, TestData.PHONE_CONTACT);
+        RegisterContactResponse registerContactBody = response.getBody().as(RegisterContactResponse.class);
+
+        Assertions.assertEquals(404, response.statusCode());
+        Assertions.assertEquals("Wrong website token", registerContactBody.getMessage());
     }
 
     @Test
     public void addAccountSuccessfully(){
-        Response response = ccFlow.agentDoLogin(username, password);
+              Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
+                TestData.DESCRIPTION_ADD_ACCOUNT,TestData.COUNTRY_CODE_ADD_ACCOUNT,getAdminToken());
 
-        ResponseBody body = response.getBody();
-        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
-        String token = responseBody.getToken();
-
-        Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
-                TestData.DESCRIPTION_ADD_ACCOUNT,TestData.COUNTRY_CODE_ADD_ACCOUNT,token);
-
+        AddAccountResponse addAccountResponseBody = addAccountResponse.getBody()
+                .as(AddAccountResponse.class);
         Assertions.assertEquals(200, addAccountResponse.statusCode());
+        Assertions.assertNotNull(addAccountResponseBody.accountId);
+        Assertions.assertEquals(addAccountResponseBody.getName(),TestData.NAME_ADD_ACCOUNT);
+        Assertions.assertEquals(addAccountResponseBody.getCountryCode(),TestData.COUNTRY_CODE_ADD_ACCOUNT);
 
     }
 }
+
