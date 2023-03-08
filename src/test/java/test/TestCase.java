@@ -1,8 +1,10 @@
 package test;
 
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 import org.junit.jupiter.api.Assertions;
 import org.testng.annotations.Test;
+import pojo.agentLogin.addAccount.AddAccountResponse;
 import pojo.agentLogin.agentLogin.AgentLoginResponse;
 import pojo.agentLogin.createInbox.CreateInboxResponse;
 import pojo.agentLogin.registerContact.RegisterContactResponse;
@@ -96,6 +98,20 @@ public class TestCase extends BaseTestCase {
 
         Assertions.assertEquals(404, response.statusCode());
         Assertions.assertEquals("Wrong website token", registerContactBody.getMessage());
+    }
+
+    @Test
+    public void addAccountSuccessfully(){
+              Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
+                TestData.DESCRIPTION_ADD_ACCOUNT,TestData.COUNTRY_CODE_ADD_ACCOUNT,getAdminToken());
+
+        AddAccountResponse addAccountResponseBody = addAccountResponse.getBody()
+                .as(AddAccountResponse.class);
+        Assertions.assertEquals(200, addAccountResponse.statusCode());
+        Assertions.assertNotNull(addAccountResponseBody.accountId);
+        Assertions.assertEquals(addAccountResponseBody.getName(),TestData.NAME_ADD_ACCOUNT);
+        Assertions.assertEquals(addAccountResponseBody.getCountryCode(),TestData.COUNTRY_CODE_ADD_ACCOUNT);
+
     }
 }
 
