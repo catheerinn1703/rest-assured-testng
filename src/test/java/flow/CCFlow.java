@@ -3,6 +3,7 @@ package flow;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import pojo.agentLogin.agentLogin.AgentLoginRequest;
+import pojo.agentLogin.addAccount.AddAccountRequest;
 
 import java.io.File;
 
@@ -45,4 +46,22 @@ public class CCFlow extends BaseUrl {
 
         return response;
     }
+
+   public Response addAccount(String name, String description, String countryCode, String token){
+        baseURI = baseUrl();
+        RestAssured.basePath = "/v1/account";
+
+        AddAccountRequest body = AddAccountRequest.addAccountRequest(name,description,countryCode);
+
+        Response response = given().log().all()
+                .header("Authorization", "jwt " + token)
+                .header("Content-type","application/json")
+                .and()
+                .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+        return response;
+   }
 }

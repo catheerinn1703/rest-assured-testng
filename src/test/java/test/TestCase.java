@@ -91,4 +91,19 @@ public class TestCase extends BaseTestCase {
         Assertions.assertNotNull(createInboxBody.getInboxId());
 
     }
+
+    @Test
+    public void addAccountSuccessfully(){
+        Response response = ccFlow.agentDoLogin(username, password);
+
+        ResponseBody body = response.getBody();
+        AgentLoginResponse responseBody = body.as(AgentLoginResponse.class);
+        String token = responseBody.getToken();
+
+        Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
+                TestData.DESCRIPTION_ADD_ACCOUNT,TestData.COUNTRY_CODE_ADD_ACCOUNT,token);
+
+        Assertions.assertEquals(200, addAccountResponse.statusCode());
+
+    }
 }
