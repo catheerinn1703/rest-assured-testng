@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import pojo.agentLogin.addAccount.AddAccountResponse;
 import pojo.agentLogin.agentLogin.AgentLoginResponse;
 import pojo.agentLogin.createInbox.CreateInboxResponse;
+import pojo.agentLogin.onboardAgent.OnboardAgentResponse;
 import pojo.agentLogin.registerContact.RegisterContactResponse;
 import testData.TestData;
 
@@ -87,9 +88,10 @@ public class TestCase extends BaseTestCase {
         RegisterContactResponse registerContactBody = response.getBody().as(RegisterContactResponse.class);
 
         Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertEquals(registerContactBody.getName(),TestData.NAME_CONTACT);
-        Assertions.assertNotNull(registerContactBody.getEmail(),TestData.EMAIL_CONTACT);
+        Assertions.assertEquals(registerContactBody.getName(), TestData.NAME_CONTACT);
+        Assertions.assertNotNull(registerContactBody.getEmail(), TestData.EMAIL_CONTACT);
     }
+
     @Test
     public void registerContactFailedWithIncorrectWebsiteToken() {
         Response response = ccFlow.registerContact(TestData.INVALID_WEBSITE_TOKEN, TestData.NAME_CONTACT,
@@ -101,17 +103,30 @@ public class TestCase extends BaseTestCase {
     }
 
     @Test
-    public void addAccountSuccessfully(){
-              Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
-                TestData.DESCRIPTION_ADD_ACCOUNT,TestData.COUNTRY_CODE_ADD_ACCOUNT,getAdminToken());
+    public void addAccountSuccessfully() {
+        Response addAccountResponse = ccFlow.addAccount(TestData.NAME_ADD_ACCOUNT,
+                TestData.DESCRIPTION_ADD_ACCOUNT, TestData.COUNTRY_CODE_ADD_ACCOUNT, getAdminToken());
 
         AddAccountResponse addAccountResponseBody = addAccountResponse.getBody()
                 .as(AddAccountResponse.class);
         Assertions.assertEquals(200, addAccountResponse.statusCode());
         Assertions.assertNotNull(addAccountResponseBody.accountId);
-        Assertions.assertEquals(addAccountResponseBody.getName(),TestData.NAME_ADD_ACCOUNT);
-        Assertions.assertEquals(addAccountResponseBody.getCountryCode(),TestData.COUNTRY_CODE_ADD_ACCOUNT);
+        Assertions.assertEquals(addAccountResponseBody.getName(), TestData.NAME_ADD_ACCOUNT);
+        Assertions.assertEquals(addAccountResponseBody.getCountryCode(), TestData.COUNTRY_CODE_ADD_ACCOUNT);
+    }
 
+    @Test
+    public void onboardAgentSuccessfully() {
+        Response response = ccFlow.onboardAgent(getAdminToken());
+        OnboardAgentResponse responseBody = response.as(OnboardAgentResponse.class);
+
+        Assertions.assertEquals(201, response.statusCode());
+        Assertions.assertNotNull(responseBody.getAgentId());
+        Assertions.assertNotNull(responseBody.getAccount().accountId);
     }
 }
+
+
+
+
 
