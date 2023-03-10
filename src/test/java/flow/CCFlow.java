@@ -51,15 +51,15 @@ public class CCFlow extends BaseUrl {
         return response;
     }
 
-   public Response addAccount(String name, String description, String countryCode, String token){
+    public Response addAccount(String name, String description, String countryCode, String token) {
         baseURI = baseUrl();
         RestAssured.basePath = "/v1/account";
 
-        AddAccountRequest body = AddAccountRequest.addAccountRequest(name,description,countryCode);
+        AddAccountRequest body = AddAccountRequest.addAccountRequest(name, description, countryCode);
 
         Response response = given().log().all()
                 .header("Authorization", "jwt " + token)
-                .header("Content-type","application/json")
+                .header("Content-type", "application/json")
                 .and()
                 .body(body)
                 .post()
@@ -140,7 +140,24 @@ public class CCFlow extends BaseUrl {
                 .log().all()
                 .extract().response();
     }
-   }
+
+    public Response onboardAgent(String token) {
+        baseURI = baseUrl();
+        RestAssured.basePath = "/v1/agent";
+        File body = new File(System.getProperty("user.dir") + "/src/test/resources/onboardAgent.json");
+
+        Response response = given().log().all()
+                .header("Authorization", "jwt " + token)
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+        return response;
+    }
+}
 
 
 
